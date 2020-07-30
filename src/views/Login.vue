@@ -19,8 +19,8 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import { validateEmpty, validateLength } from '../utils/validate'
-import store from '../store'
-import router from '../router'
+// import store from '../store'
+import { UserModule } from '../store/modules/user'
 
 @Component({})
 export default class Login extends Vue {
@@ -39,19 +39,24 @@ export default class Login extends Vue {
     }
 
     private submitForm(formName: string): void {
-        (this.$refs[formName] as any).validate((valid: boolean) => {
-          if (valid) {
-            store.commit('setToken', new Date().getTime().toString());
-            if (this.$route.query.redirect) {
-                this.$router.push({path: String(this.$route.query.redirect)})
-            } else {
-                this.$router.push({path: '/home'})
-            }
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        })
+        UserModule.SET_TOKEN(new Date().getTime().toString());
+        this.$router.push({path: '/'})
+        // (this.$refs[formName] as any).validate((valid: boolean) => {
+        // console.log(this.$store.state)
+        //   if (valid) {
+        //     UserModule.SET_TOKEN(new Date().getTime().toString());
+        //     this.$router.push({path: '/home'})
+        //     // store.commit('user/SET_TOKEN', new Date().getTime().toString());
+        //     // if (this.$route.query.redirect) {
+        //     //     this.$router.push({path: String(this.$route.query.redirect)})
+        //     // } else {
+        //     //     this.$router.push({path: '/home'})
+        //     // }
+        //   } else {
+        //     console.log('error submit!!');
+        //     return false;
+        //   }
+        // })
     }
 }
 </script>

@@ -1,0 +1,86 @@
+.bi-ul {
+  @include bi-ul;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+#app .block {
+  display: block;
+}
+#app .inline-block {
+  display: inline-block;
+}
+
+#app .float-left {
+  float: left;
+}
+#app .float-right {
+  float: right;
+}
+
+#app .el-main .drop-target {
+  border-color: $dragBorder;
+
+  &.drop-bg {
+    background: rgba(5, 104, 87, 0.562);
+  }
+  &.drop-border {
+    border: 2px solid #000;
+  }
+}
+
+#app .border-pane {
+  border: 1px solid $paneBorder;
+}
+
+#app .middle-pane-bg {
+  background: #fafafa;
+}
+
+.global-caret {
+  display: none;
+  color: #fff;
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-top: -8px;
+  cursor: pointer;
+}
+
+.drag-caret {
+  width: 10px;
+  height: 10px;
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  margin-top: -5px;
+  border: 5px solid $dragBorder;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+}
+
+.bi-tag-row-col {
+  .el-tag {
+    padding: 0 8px;
+    border-radius: 12px;
+
+    &.el-tag--dark {
+      background: $tagColor1;
+      border-color: $tagColor1;
+
+      i:hover {
+        background: $dangerColor;
+      }
+    }
+  }
+  .col-header + .row-tags>.el-tag.el-tag--dark {
+    background: $tagColor2;
+    border-color: $tagColor2;
+  }
+}

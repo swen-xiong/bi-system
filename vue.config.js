@@ -35,6 +35,23 @@ module.exports = {
       }
     }
   },
+  configureWebpack: config => {
+    //调试JS
+    config.devtool = "source-map";
+  },
+  // css: {
+  //   loaderOptions: {
+  //     scss: {
+  //       // 旧版本sass-loader
+  //       // data: `@import "~@/assets/scss/variables.scss";`
+  //       // 新版本 >= v8.0.0 sass-loader https://github.com/webpack-contrib/sass-loader#prependdata
+  //       prependData: `
+  //           @import "~@/styles/variables.scss";
+  //           @import "~@/styles/mixin.scss";
+  //         `
+  //     }
+  //   }
+  // },
   // pwa: {
   //   name: name,
   //   workboxPluginMode: 'InjectManifest',
@@ -46,8 +63,8 @@ module.exports = {
     'style-resources-loader': {
       preProcessor: 'scss',
       patterns: [
-        path.resolve(__dirname, 'src/styles/_variables.scss'),
-        path.resolve(__dirname, 'src/styles/_mixins.scss')
+        path.resolve(__dirname, 'src/styles/variables.scss'),
+        path.resolve(__dirname, 'src/styles/mixin.scss')
       ]
     }
   },

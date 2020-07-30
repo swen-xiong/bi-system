@@ -1,0 +1,31 @@
+/** 文本溢出截断显示省略号 */
+@mixin ellipsis-text($display: block) {
+  display: $display;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/** ul样式重置 */
+@mixin bi-ul {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+}
+
+/** flex */
+@mixin flex-row($justifyContent: flex-start) {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: $justifyContent;
+}
+
+@mixin flex-center {
+  @include flex-row(center)
+}
+
+@mixin user-select-none {
+  user-select: none;
+  cursor: default;
+}

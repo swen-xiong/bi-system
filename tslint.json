@@ -20,6 +20,7 @@
     "align": [false, "parameters", "statements"],
     "max-line-length": [true, 200],
     "no-console": false,
-    "ban-types": false
+    "ban-types": false,
+    "member-ordering": [false]
   }
 }

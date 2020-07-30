@@ -1,12 +1,13 @@
 <template>
   <div class="tinymce-editor">
-    <editor v-model="tinymceHtml" :init="config" :disabled="disabled"></editor>
+    <Editor v-model="tinymceHtml" :init="config" :disabled="disabled"></Editor>
   </div>
 </template>
 
 <script lang="ts">
 import {
   Vue,
+
   Component,
   Prop,
   Watch,
@@ -23,7 +24,7 @@ import 'tinymce/plugins/fullpage'
 
 @Component({
   components: {
-    editor: Editor
+    Editor
   }
 })
 export default class TinymceEditor extends Vue {
@@ -39,7 +40,7 @@ export default class TinymceEditor extends Vue {
     language_url: '/tinymce/zh_CN.js',
     language: 'zh_CN',
     skin_url: '/tinymce/skins/lightgray',
-    height: 300,
+    // height: 300,
     toolbar:
       'fontselect | bold italic underline | fontsizeselect | forecolor | alignleft aligncenter alignright | undo redo | removeformat',
     font_formats: `微软雅黑=Microsoft YaHei,Helvetica Neue,PingFang SC,sans-serif;
@@ -71,7 +72,27 @@ export default class TinymceEditor extends Vue {
     branding: false, // 隐藏右下角技术支持
     menubar: false, // 隐藏菜单栏
     elementpath: true, // 隐藏底栏元素路径
-    resize: false // true（仅允许改变高度）, false（完全不让你动）, 'both'（宽高都能改变，注意引号）
+    resize: false, // true（仅允许改变高度）, false（完全不让你动）, 'both'（宽高都能改变，注意引号）
+    setup: (editor: any) => {
+      // editor.on('change', (event: MouseEvent) => {
+      //   // console.log('editor change')
+      //   // const selection = tinymce.activeEditor.selection;
+      //   // console.log(selection.getRng(true).startOffset)
+      // }),
+      // editor.on('keyup', (event: KeyboardEvent) => {
+      //   const selection = tinymce.activeEditor.selection
+      //   const startContainer = selection.getRng(true).startContainer.textContent || ''
+      //   const startOffset = selection.getRng(true).startOffset
+      //   const lastInput = startContainer.substring(startContainer.length - 1)
+      //   // var $ = tinymce.dom.DomQuery;
+      //   // $('p').attr('attr', 'value').addClass('class');
+      //   selection.setCursorLocation(selection.getNode(), 1)
+      //   // console.log(lastInput)
+      //   if (lastInput === '<') {
+      //     // TODO show suggestions dropdown
+      //   }
+      // })
+    }
   }
   private config: object = { ...this.defaultConfig, ...this.customConfig }
   private tinymceHtml: string = this.model
@@ -90,7 +111,7 @@ export default class TinymceEditor extends Vue {
   @Emit('change')
   @Watch('tinymceHtml')
   private watchValue(nv: string, ov: string): void {
-    console.log(111)
+    // console.log(111)
   }
 }
 </script>
