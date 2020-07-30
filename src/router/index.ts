@@ -1,8 +1,11 @@
 import Vue from 'vue'
-import Router from 'vue-router'
+import Router, { Route } from 'vue-router'
 import Test from '../views/Test.vue'
-import store from '../store'
 import { UserModule } from '@/store/modules/user'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+
+NProgress.configure({ showSpinner: true })
 
 Vue.use(Router)
 
@@ -35,39 +38,50 @@ const router = new Router({
       name: 'test',
       component: Test,
       meta: {
-        requireAuth: true
+        requireAuth: false
       }
     }
   ]
 })
 
-// router.beforeEach((to, from, next) => {
-//   console.log(UserModule)
-//   if (to.path === '/login') {
-//     // TODO 若已登录，清除登录信息
-//     UserModule.REMOVE_TOKEN()
-//     next()
-//   } else if (to.matched.some((route) => route.meta.requireAuth)) {
-//     if (UserModule.token) {
-//       if (Object.keys(from.query).length === 0) {
-//         next()
-//       } else {
-//         // 如果来源路由有query
-//         const redirect: any = from.query.redirect;
-//         // 解决next无限循环的问题
-//         if (to.path === redirect) {
-//           next()
-//         } else {
-//           next({path: redirect})
-//         }
-//       }
-//     } else {
-//       next({
-//         path: '/login',
-//         query: { redirect: to.fullPath }
-//       })
-//     }
-//   }
-// })
+router.beforeEach(async (to, from, next) => {
+  if (UserModule.token) {
+    if (to.path === '/login') {
+      next({path: '/'})
+      NProgress.done()
+    } else if (Object.keys(from.query).length === 0) {
+      next()
+      NProgress.done()
+    } else {
+      // 如果来源路由有query
+      const redirect: any = from.query.redirect;
+      // 解决next无限循环的问题
+      if (to.path === redirect) {
+        next()
+        NProgress.done()
+      } else {
+        next({path: redirect})
+        NProgress.done()
+      }
+    }
+  } else {
+    if (to.path === '/login') {
+      next()
+      NProgress.done()
+    } else if (to.matched.some((route) => !route.meta.requireAuth)) {
+      next()
+      NProgress.done()
+    } else {
+      next(`/login?redirect=${to.path}`)
+      NProgress.done()
+    }
+  }
+})
+
+router.afterEach(() => {
+  // Finish progress bar
+  // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939
+  NProgress.done()
+})
 
 export default router
