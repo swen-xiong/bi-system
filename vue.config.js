@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path')
+// const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
@@ -38,6 +39,11 @@ module.exports = {
   configureWebpack: config => {
     //调试JS
     config.devtool = "source-map";
+
+    // config.plugins.push(new MonacoWebpackPlugin({
+    //   languages: ["javascript", "css", "html", "json", "sql"],
+    //   features: ["coreCommands", "find"]
+    // }))
   },
   // css: {
   //   loaderOptions: {

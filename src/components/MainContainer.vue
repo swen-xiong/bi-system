@@ -139,10 +139,6 @@ export default class MainContainer extends Vue {
 
   private change(): void {
     this.showRename = true
-    // this.sheetName = '构造函数为window.MutationObserver，它在监听到DOM中的改变并且一系列改变结束后触发回调函数。他与事件不同的是：它在DOM变化时，会记录每一个DOM的变化（为一个MutationRecord对象），到DOM变化结束时触发回调函数。DOM变化可能是一系列的（比如同时改变宽和高），那么这一系列的变化就会产生一个队列，这个队列会作为参数传递给回调函数。';
-    // this.$nextTick(() => {
-    //   this.calTableHeight();
-    // })
   }
 
   /**

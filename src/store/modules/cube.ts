@@ -1,5 +1,5 @@
 import { Module, VuexModule, getModule, Mutation, Action } from 'vuex-module-decorators'
-import { ICube } from '@/interface'
+import { ICube, IProjectData } from '@/interface'
 import CONST from '@/const'
 import store from '@/store'
 import { Icon } from 'element-ui';
@@ -13,32 +13,42 @@ export interface ICubeState {
   signs: ICube[]
 }
 
-  /**
-   * 验证类型为type的项中是否已包含cube
-   * @param cube
-   * @param type
-   */
-  function isCubeExist(cube: ICube, type: string, storeModule: Cube): boolean {
-    if (!(type.toUpperCase() in CONST.cube.CUBE_CATEGORY)) {
-      console.error('invalid type string, type must be included in CUBE_CATEGORY')
-      return false;
-    }
-    if (type === CONST.cube.CUBE_CATEGORY.ROW && storeModule.row.includes(cube)) { return true }
-    if (type === CONST.cube.CUBE_CATEGORY.COL && storeModule.col.includes(cube)) { return true }
-    if (type === CONST.cube.CUBE_CATEGORY.PAGES && storeModule.pages.includes(cube)) { return true }
-    if (type === CONST.cube.CUBE_CATEGORY.FILTERS && storeModule.filters.includes(cube)) { return true }
-    if (type === CONST.cube.CUBE_CATEGORY.SIGNS && storeModule.signs.includes(cube)) { return true }
+/**
+ * 验证类型为type的项中是否已包含cube
+ * @param cube
+ * @param type
+ */
+function isCubeExist(cube: ICube, type: string, storeModule: Cube): boolean {
+  if (!(type.toUpperCase() in CONST.cube.CUBE_CATEGORY)) {
+    console.error('invalid type string, type must be included in CUBE_CATEGORY')
     return false;
   }
+  if (type === CONST.cube.CUBE_CATEGORY.ROW && storeModule.row.includes(cube)) { return true }
+  if (type === CONST.cube.CUBE_CATEGORY.COL && storeModule.col.includes(cube)) { return true }
+  if (type === CONST.cube.CUBE_CATEGORY.PAGES && storeModule.pages.includes(cube)) { return true }
+  if (type === CONST.cube.CUBE_CATEGORY.FILTERS && storeModule.filters.includes(cube)) { return true }
+  if (type === CONST.cube.CUBE_CATEGORY.SIGNS && storeModule.signs.includes(cube)) { return true }
+  return false;
+}
 
 @Module({ dynamic: true, store, name: 'cube' })
 class Cube extends VuexModule implements ICubeState {
-  public curCube: ICube = {} as ICube;
-  public row: ICube[] = [];
-  public col: ICube[] = [];
-  public pages: ICube[] = [];
-  public filters: ICube[] = [];
-  public signs: ICube[] = [];
+  public projectData: IProjectData = {} as IProjectData
+  public curCube: ICube = {} as ICube
+  public row: ICube[] = []
+  public col: ICube[] = []
+  public pages: ICube[] = []
+  public filters: ICube[] = []
+  public signs: ICube[] = []
+
+  /**
+   * set projectData
+   * @param data
+   */
+  @Mutation
+  private SET_PROJECT_DATA(data: IProjectData) {
+    this.projectData = data;
+  }
 
   /**
    * 从类型为type的项目中添加cube
@@ -100,6 +110,11 @@ class Cube extends VuexModule implements ICubeState {
   @Mutation
   public SET_CUR_CUBE(cube: ICube) {
     this.curCube = cube;
+  }
+
+  @Action({ commit: 'SET_PROJECT_DATA'} )
+  public setProjectData(data: IProjectData) {
+    return data
   }
 
   @Action

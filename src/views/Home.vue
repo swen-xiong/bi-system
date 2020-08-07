@@ -31,6 +31,8 @@ import LeftSide from '../components/LeftSide.vue'
 import MiddleSide from '../components/MiddleSide.vue'
 import MainHeader from '../components/MainHeader.vue';
 import MainContainer from '../components/MainContainer.vue';
+import { CubeModule } from '../store/modules/cube';
+import { IProjectData } from '../interface';
 
 @Component({
   components: {
@@ -43,9 +45,10 @@ import MainContainer from '../components/MainContainer.vue';
 })
 export default class Home extends Vue {
   /** 项目信息 */
-  private projectData: any = {};
+  // private projectData: any = {};
   private mounted(): void {
-    this.projectData = {
+    const projectData = {
+      id: '66666',
       name: '示例-超市',
       dimension: [
         {
@@ -113,6 +116,12 @@ export default class Home extends Vue {
         {id: '3002', type: 'number', name: '选择利润前多少名客户'}
       ]
     }
+    // this.projectData = projectData
+    CubeModule.setProjectData(projectData)
+  }
+
+  get projectData() {
+    return CubeModule.projectData
   }
 
   private resize(): void {

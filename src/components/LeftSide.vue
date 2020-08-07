@@ -26,7 +26,13 @@
                   <div class="dimension-title-icon">
                     <i class="el-icon-s-grid"></i>
                     <i class="el-icon-search" @click="showSearch"></i>
-                    <i class="el-icon-caret-bottom"></i>
+                    <el-dropdown trigger="click" placement="bottom" size="mini">
+                      <i class="el-icon-caret-bottom cursor-pointer" style="outline:none;"></i>
+                      <el-dropdown-menu style="margin-top:0;">
+                        <el-dropdown-item command="calc" @click.native="showComputedDialog = true">创建计算字段</el-dropdown-item>
+                        <el-dropdown-item command="param" @click.native="showParamDialog = true">创建参数</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
                   </div>
                 </div>
                 <el-scrollbar class="dimension-next">
@@ -121,23 +127,45 @@
         </div>
       </el-tab-pane>
     </el-tabs>
+
+    <computed-field-dialog :show-dialog.sync="showComputedDialog" :model="computedField" @confirm="confirm">
+    </computed-field-dialog>
+
+    <create-param :show-dialog.sync="showParamDialog" :model="paramField" @confirm="paramCreateCallback"></create-param>
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import ComputedFieldDialog from './dialog/ComputedFieldDialog.vue'
+import CreateField from './dialog/CreateParam.vue'
 import store from '../store'
-import { CubeModule } from '@/store/modules/cube';
-import { treeNode } from 'element-ui/types/table';
-import { TreeNode } from 'element-ui/types/tree';
+import { CubeModule } from '@/store/modules/cube'
+import { treeNode } from 'element-ui/types/table'
+import { TreeNode } from 'element-ui/types/tree'
 
 @Component({
-  name: 'bi-left-side'
+  name: 'bi-left-side',
+  components: {
+    'computed-field-dialog': ComputedFieldDialog,
+    'create-param': CreateField
+  }
 })
 export default class LeftSide extends Vue {
   @Prop()
   public projectData!: any;
 
+  /** 显示计算字段弹窗 */
+  private showComputedDialog: boolean = false
+
+  /** 计算字段对象 */
+  private computedField: any = {}
+
+  /** 显示创建参数弹窗 */
+  private showParamDialog: boolean = false
+
+  /** 创建的参数对象 */
+  private paramField: any = {}
 
   private data: any = this.projectData;
 
@@ -161,7 +189,6 @@ export default class LeftSide extends Vue {
   private showSearch() {
     this.showSearchInput = !this.showSearchInput;
   }
-
 
   /** 提交搜索 */
   private searchKeywords() {
@@ -193,6 +220,31 @@ export default class LeftSide extends Vue {
     // for (const target of dropTargets) {
     //   target.classList.remove('drop-target');
     // }
+  }
+
+  /**
+   * callback when computed-field-dialog confirm-closed
+   * @param data computedField
+   */
+  private confirm(data: any) {
+    const projectData = CubeModule.projectData
+    projectData.measurement.push(data)
+    CubeModule.setProjectData(projectData)
+
+    // reset data
+    this.computedField = null
+  }
+
+  /**
+   * callback when create-field-dialog confirm-closed
+   * @param data paramField
+   */
+  private paramCreateCallback(data: any) {
+    console.log(data)
+    const projectData = CubeModule.projectData
+    projectData.parameters = projectData.parameters || []
+    projectData.parameters.push(data)
+    CubeModule.setProjectData(projectData)
   }
 
 }
