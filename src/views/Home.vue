@@ -1,154 +1,240 @@
 <template>
-  <el-container class="home">
-    <el-header>
-      <bi-toolbar></bi-toolbar>
-    </el-header>
-    <el-main>
-      <split-pane-custom @resize="resize" :min-percent='10' :default-percent='12' :max-percent='30' split="vertical">
-        <bi-left-side slot="paneL" :project-data="projectData"></bi-left-side>
-        <template slot="paneR">
-          <split-pane-custom split="vertical" :min-percent='10' :default-percent='13'>
-            <bi-middle-side slot="paneL"></bi-middle-side>
-            <template slot="paneR">
-              <split-pane-custom split="horizontal" :min-percent='15' :default-percent='15' @resize="mainResize" ref="main" :min-size="76">
-                <!-- <template slot="paneL">行列</template> -->
-                <bi-main-header slot="paneL" ref="bi-main-header"></bi-main-header>
-                <!-- <template slot="paneR">图表显示区域</template> -->
-                <bi-main-container slot="paneR"></bi-main-container>
-              </split-pane-custom>
-            </template>
-          </split-pane-custom>
-        </template>
-      </split-pane-custom>
-    </el-main>
-  </el-container>
+  <div class="bi-home">
+    <div class="aside">
+      <router-link to="main" class="home-link">
+        <i class="el-icon-magic-stick"></i>
+      </router-link>
+      <el-scrollbar class="aside-scroll">
+        <div class="content">
+          <div class="title">连接</div>
+          <div class="connect-type">
+            <div class="name">到文件</div>
+            <ul class="nav">
+              <li @click="handleUpload">Microsoft Excel</li>
+              <li>文本文件</li>
+              <li>JSON 文件</li>
+              <li>Microsoft Access</li>
+            </ul>
+          </div>
+          <div class="connect-type">
+            <div class="name">到服务器</div>
+            <ul class="nav">
+              <li>Microsoft SQL Server</li>
+              <li>MySQL</li>
+              <li>Oracle</li>
+            </ul>
+          </div>
+          <div class="connect-type">
+            <div class="name">已保存数据源</div>
+            <ul class="nav">
+            </ul>
+          </div>
+        </div>
+      </el-scrollbar>
+    </div>
+    <div class="main-container">
+      <div class="title">打开</div>
+      <input
+        ref="excel-upload-input"
+        class="excel-upload-input"
+        type="file"
+        accept=".xlsx, .xls"
+        @change="handleClick"
+      >
+      <a class="open-a-btn" @click="handleUpload">打开工作簿</a>
+    </div>
+    <div class="mask" v-if="loading">
+      <i class="el-icon-loading"></i>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Watch, Provide, Model, Emit } from 'vue-property-decorator'
-import Toolbar from '../components/Toolbar.vue'
-import LeftSide from '../components/LeftSide.vue'
-import MiddleSide from '../components/MiddleSide.vue'
-import MainHeader from '../components/MainHeader.vue';
-import MainContainer from '../components/MainContainer.vue';
-import { CubeModule } from '../store/modules/cube';
-import { IProjectData } from '../interface';
+import { Vue, Component } from 'vue-property-decorator'
+import XLSX from 'xlsx'
+import { SheetModule } from '@/store/modules/sheet'
+import { getHeaderRow } from '@/utils/excel'
 
 @Component({
-  components: {
-    'bi-toolbar': Toolbar,
-    'bi-left-side': LeftSide,
-    'bi-middle-side': MiddleSide,
-    'bi-main-header': MainHeader,
-    'bi-main-container': MainContainer
-  }
+  name: 'Home'
 })
-export default class Home extends Vue {
-  /** 项目信息 */
-  // private projectData: any = {};
-  private mounted(): void {
-    const projectData = {
-      id: '66666',
-      name: '示例-超市',
-      dimension: [
-        {
-          id: 1,
-          name: '一级 1',
-          children: [{
-            id: 4,
-            name: '二级 1-1',
-            children: [{
-              id: 9,
-              name: '三级 1-1-1'
-            }, {
-              id: 10,
-              name: '三级 1-1-2'
-            }]
-          }]
-        }, {
-          id: 2,
-          name: '一级 2',
-          children: [{
-            id: 5,
-            name: '二级 2-1'
-          }, {
-            id: 6,
-            name: '二级 2-2'
-          }]
-        }, {
-          id: 3,
-          name: '一级 3',
-          children: [{
-            id: 7,
-            name: '二级 3-1'
-          }, {
-            id: 8,
-            name: '二级 3-2',
-            children: [{
-              id: 11,
-              name: '三级 3-2-1三级 3-2-1三级 3-2-1三级 3-2-1三级 3-2-1三级 3-2-1三级 3-2-1三级 3-2-1'
-            }, {
-              id: 12,
-              name: '三级 3-2-2'
-            }, {
-              id: 13,
-              name: '三级 3-2-3'
-            }]
-          }]
-        }
-      ],
-      measurement: [
-        {id: '1001', type: 'number', name: '利润'},
-        {id: '1002', type: 'number', name: '利润率'},
-        {id: '1003', type: 'number', name: '折扣'},
-        {id: '1004', type: 'integer', name: '数量'},
-        {id: '1005', type: 'number', name: '销售额'},
-        {id: '1006', type: 'datetime', name: '销售时间'},
-        {id: '1007', type: 'date', name: '结算日期'},
-        {id: '1008', type: 'string', name: '字符串'},
-        {id: '1009', type: 'boolean', name: '是否盈利'},
-      ],
-      collection: [
-        {id: '2001', name: '利润排名前列的客户'}
-      ],
-      parameters: [
-        {id: '3001', type: 'number', name: '利润容器大小'},
-        {id: '3002', type: 'number', name: '选择利润前多少名客户'}
-      ]
+export default class extends Vue {
+  private loading = false
+
+  private excelData = {
+    header: null,
+    results: null
+  }
+
+  /** trigger upload */
+  private handleUpload() {
+    (this.$refs['excel-upload-input'] as HTMLInputElement).click()
+  }
+
+  /** get file and upload */
+  private handleClick(e: MouseEvent) {
+    const files = (e.target as HTMLInputElement).files
+    if (files) {
+      const rawFile = files[0] // only use files[0]
+      this.upload(rawFile)
     }
-    // this.projectData = projectData
-    CubeModule.setProjectData(projectData)
   }
 
-  get projectData() {
-    return CubeModule.projectData
+  /** upload Function */
+  private upload(rawFile: File) {
+    (this.$refs['excel-upload-input'] as HTMLInputElement).value = '' // Fixes can't select the same excel
+    this.readerData(rawFile)
   }
 
-  private resize(): void {
-    console.log('resize')
-  }
+  /** read file data */
+  private readerData(rawFile: File) {
+    this.loading = true
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const data = (e.target as FileReader).result
+      const workbook = XLSX.read(data, { type: 'array' })
+      const firstSheetName = workbook.SheetNames[0]
+      const worksheet = workbook.Sheets[firstSheetName]
+      const header = getHeaderRow(worksheet)
+      const results = XLSX.utils.sheet_to_json(worksheet)
+      // const results = XLSX.utils.sheet_to_json(worksheet, {header: 1, raw: false})
+      console.log(header, results)
+      this.loading = false
 
-  private mainResize(percent: number, size: number, isChange: boolean): void {
-    if (isChange) {
-      (this.$refs['bi-main-header'] as any).$refs.rowColPane.checkAndResetSize(size);
+      SheetModule.SET_SHEET({
+        bookName: rawFile.name.split('.')[0],
+        SheetNames: workbook.SheetNames,
+        Sheets: workbook.Sheets,
+        curSheet: worksheet,
+        curSheetFormat: results,
+        curSheetHeader: header
+      })
+      this.$router.push('/view')
     }
+    reader.readAsArrayBuffer(rawFile)
   }
 }
-
 </script>
+
 <style lang="scss" scoped>
-.home {
+.bi-home {
   height: 100%;
-  padding-right: 15px;
-  background: #f7f7f7;
+  position: relative;
+
+  .aside {
+    width: 250px;
+    height: 100%;
+    position: relative;
+    background: #355c80;
+
+    .home-link {
+      display: block;
+      width: 100%;
+      height: 40px;
+      background: #2d4e6c;
+      color: #fff;
+      padding: 5px;
+      font-size: 28px;
+      line-height: 28px;
   
-  .el-header {
-    padding: 0;
+      &:hover {
+        background: #274560;
+      }
+    }
+
+    .aside-scroll {
+      position: absolute;
+      top: 40px;
+      bottom: 0;
+      width: 100%;
+      padding-top: 20px;
+      padding-bottom: 20px;
+
+      .content {
+        color: #fff;
+        padding: 0 10px 0 20px;
+
+        .title {
+          font-size: 28px;
+          font-weight: bold;
+          margin-bottom: 15px;
+        }
+
+        .connect-type {
+          & + .connect-type {
+            margin-top: 40px;
+          }
+
+          .name {
+            color: #9aadbf;
+            font-size: 16px;
+            margin-bottom: 15px;
+          }
+
+          .nav {
+            margin-left: 10px;
+            
+            &>li {
+              padding: 5px;
+              font-size: 14px;
+              cursor: pointer;
+
+              &:hover {
+                background: #2d4e6c;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
-  .el-main {
-    padding: 0;
-    overflow: hidden;
+  .main-container {
+    position: absolute;
+    left: 250px;
+    right: 0;
+    top: 0;
+    height: 100%;
+    padding: 60px 20px 20px 20px;
+    background: #f8f8f8;
+
+    .title {
+      font-size: 28px;
+    }
+
+    .excel-upload-input {
+      display: none;
+      z-index: -9999;
+    }
+
+    .open-a-btn {
+      display: block;
+      margin-top: 10px;
+      color: #ef8f8c;
+      cursor: pointer;
+      text-align: left;
+      font-size: 14px;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .mask {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.2);
+
+    .el-icon-loading {
+      font-size: 50px;
+    }
   }
 }
 </style>

@@ -32,7 +32,8 @@
     "vuex": "^3.4.0",
     "vuex-persistedstate": "^3.0.1",
     "vxe-table": "^2.9.14",
-    "xe-utils": "^2.6.2"
+    "xe-utils": "^2.6.2",
+    "xlsx": "^0.16.6"
   },
   "devDependencies": {
     "@types/js-cookie": "^2.2.6",

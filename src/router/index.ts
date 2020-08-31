@@ -27,6 +27,20 @@ const router = new Router({
         requireAuth: true
       }
     }, {
+      path: '/view',
+      name: 'view',
+      component: () => import('../views/DataView.vue'),
+      meta: {
+        requireAuth: true
+      }
+    }, {
+      path: '/main',
+      name: 'main',
+      component: () => import('../views/Main.vue'),
+      meta: {
+        requireAuth: true
+      }
+    }, {
       path: '/draggable',
       name: 'draggable',
       component: () => import('../views/Draggable.vue'),

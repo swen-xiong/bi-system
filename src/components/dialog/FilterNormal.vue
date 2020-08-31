@@ -5,7 +5,7 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
     :visible.sync="visible">
-    <div slot="title" class="title">筛选器 [{{field.name}}{{(field.filter && field.filter.name) || ''}}]---{{limit.formula}}</div>
+    <div slot="title" class="title">筛选器 [{{field.name}}{{(field.filter && field.filter.name) || ''}}]</div>
 
     <div class="container">
       <el-tabs type="card" v-model="tabName">
@@ -176,7 +176,7 @@
                 <el-input v-model="limit.formulaValue" size="mini" :disabled="limit.type !== 2"></el-input>
               </el-col>
             </el-row>
-            <el-row class="radio-row">
+            <el-row class="radio-row" style="border:1px solid #ccc;">
               <!-- <el-input type="textarea" rows="15" v-model="limit.formula" :disabled="limit.type !== 2"></el-input> -->
               <bi-monaco v-if="tabName === 'limit'" :readonly="limit.type !== 2" :model.sync="limit.formula"></bi-monaco>
             </el-row>
@@ -325,7 +325,7 @@ export default class extends Vue {
     this.cancel();
   }
 
-  // 应用
+  /** 应用 */
   private confirm() {
     this.cancel()
     const curCube = this.$store.state.cube.curCube;
